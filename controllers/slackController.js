@@ -3,7 +3,10 @@ const approvalService = require('../services/approvalService');
 const { v4: uuidv4 } = require('uuid');
 
 exports.handleSlashCommand = async (req, res) => {
-  console.log('Received slash command:', req.body);
+    console.log('💬 SLACK COMMAND RECEIVED');
+    console.log('Headers:', JSON.stringify(req.headers));
+    console.log('Body:', JSON.stringify(req.body));
+    console.log('Raw Body:', req.rawBody);
   
   const { command, trigger_id, user_id } = req.body;
   
@@ -12,6 +15,7 @@ exports.handleSlashCommand = async (req, res) => {
   
   if (command === '/approval-test') {
     try {
+        console.log('Command:', command);
       // Create the modal with the trigger_id from the request
       const modal = createApprovalModal(trigger_id);
       
@@ -90,7 +94,7 @@ function createApprovalModal(trigger_id) {
       };
 
     }
-    
+
 exports.handleInteraction = async (req, res) => {
   const payload = JSON.parse(req.body.payload);
   
