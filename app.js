@@ -32,4 +32,19 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
+// Add to your server startup
+const { WebClient } = require('@slack/web-api');
+const web = new WebClient(process.env.SLACK_BOT_TOKEN);
+
+async function testSlackConnection() {
+  try {
+    const result = await web.auth.test();
+    console.log('✅ Slack connection successful!', result);
+  } catch (error) {
+    console.error('❌ Slack connection failed:', error);
+  }
+}
+
+testSlackConnection();
+
 module.exports = app;

@@ -3,16 +3,28 @@ const config = require('../config/config');
 
 const SLACK_API_URL = config.slack.apiUrl;
 
-exports.sendModal = async (triggerId, modal) => {
-  const response = await axios.post(`${SLACK_API_URL}/views.open`, modal, {
-    headers: {
-      'Authorization': `Bearer ${config.slack.botToken}`,
-      'Content-Type': 'application/json'
-    }
-  });
-  return response.data;
-};
+// From slackService.js - check this function
 
+exports.sendModal = async (triggerId, modal) => {
+  try {
+    console.log('Sending modal with trigger_id:', triggerId);
+    console.log('Modal content:', JSON.stringify(modal, null, 2));
+    
+    const response = await axios.post(`${SLACK_API_URL}/views.open`, modal, {
+      headers: {
+        'Authorization': `Bearer ${config.slack.botToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    console.log('Slack API response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error sending modal to Slack:', 
+      error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
 exports.sendMessage = async (channel, text, blocks = []) => {
   const response = await axios.post(`${SLACK_API_URL}/chat.postMessage`, {
     channel,
