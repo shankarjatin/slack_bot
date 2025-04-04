@@ -62,9 +62,9 @@ const app = new App({
 });
 
 // Health check endpoint (Express is included with Bolt)
-app.receiver.app.get('/health', (req, res) => {
-  res.status(200).send('OK');
-});
+// app.receiver.app.get('/health', (req, res) => {
+//   res.status(200).send('OK');
+// });
 
 // Handle slash command
 app.command('/approval-test', async ({ command, ack, client }) => {
