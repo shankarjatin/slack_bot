@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const slackController = require('../controllers/slackController');
-const { verifySlackRequest } = require('../middleware/slackAuth');
+const { verifySlackRequest } = require('../middlewares/slackAuth');
 
 // Apply Slack verification middleware
 router.use(verifySlackRequest);
