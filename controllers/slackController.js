@@ -3,25 +3,94 @@ const approvalService = require('../services/approvalService');
 const { v4: uuidv4 } = require('uuid');
 
 exports.handleSlashCommand = async (req, res) => {
-    res.status(200).send();
-  const { command, trigger_id, user_id } = req.body;
   console.log('Received slash command:', req.body);
- 
+  
+  const { command, trigger_id, user_id } = req.body;
+  
+  // IMPORTANT: You're responding twice in your code!
+  // Removed the first res.status(200).send() that was causing issues
+  
   if (command === '/approval-test') {
     try {
-      // Open modal for approval request
-      await slackService.sendModal(trigger_id, createApprovalModal());
-      // Acknowledge the command
-      return res.status(200).send();
+      // Create the modal with the trigger_id from the request
+      const modal = createApprovalModal(trigger_id);
+      
+      // Acknowledge the command immediately
+      res.status(200).send();
+      
+      // Then open the modal
+      await slackService.sendModal(trigger_id, modal);
     } catch (error) {
       console.error('Error handling slash command:', error);
-      return res.status(500).send('Something went wrong');
+      // Only respond if we haven't already
+      if (!res.headersSent) {
+        return res.status(500).send('Something went wrong');
+      }
     }
-  }
-  
+} else {
+  // Only for other commands
   res.status(200).send('Unknown command');
+}
 };
 
+
+function createApprovalModal(trigger_id) {
+    return {
+      trigger_id: trigger_id, // Now properly defined
+      view: {
+        type: "modal",
+        callback_id: "approval_submission",
+        title: {
+          type: "plain_text",
+          text: "Request Approval",
+          emoji: true
+        },
+        submit: {
+          type: "plain_text",
+          text: "Submit",
+          emoji: true
+        },
+        close: {
+          type: "plain_text",
+          text: "Cancel",
+          emoji: true
+        },
+        blocks: [
+          {
+            type: "section",
+            block_id: "approver_block",
+            text: {
+              type: "mrkdwn",     },
+              accessory: {
+                type: "users_select",
+                placeholder: {
+                  type: "plain_text",
+                  text: "Select an approver",
+                  emoji: true
+                },
+                action_id: "select_approver"
+              }
+            },
+            {
+              type: "input",
+              block_id: "details_block",
+              element: {
+                type: "plain_text_input",
+                multiline: true,
+                action_id: "approval_details"
+              },
+              label: {
+                type: "plain_text",
+                text: "Enter approval details",
+                emoji: true
+              }
+            }
+          ]
+        }
+      };
+
+    }
+    
 exports.handleInteraction = async (req, res) => {
   const payload = JSON.parse(req.body.payload);
   
