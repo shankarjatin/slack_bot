@@ -3,8 +3,10 @@ const approvalService = require('../services/approvalService');
 const { v4: uuidv4 } = require('uuid');
 
 exports.handleSlashCommand = async (req, res) => {
+    res.status(200).send();
   const { command, trigger_id, user_id } = req.body;
-  
+  console.log('Received slash command:', req.body);
+ 
   if (command === '/approval-test') {
     try {
       // Open modal for approval request
